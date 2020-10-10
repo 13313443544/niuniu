@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc.xsd
+      ">
+
+
+      <context:component-scan base-package="cn.smbms.controller"></context:component-scan>
+
+      <mvc:annotation-driven/>
+
+      <!--配置静态资源路径 /static/js/style.css-->
+      <mvc:resources mapping="/static/**" location="/static/"></mvc:resources>
+      <!--<mvc:resources mapping="/css/**" location="/css/"></mvc:resources>
+      <mvc:resources mapping="/js/**" location="/js/"></mvc:resources>-->
+
+      <!--全局异常处理器-->
+      <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+          <!--默认跳转的页面-->
+          <property name="defaultErrorView" value="error"></property>
+          <!--异常信息存放到了ex变量-->
+          <property name="exceptionAttribute" value="ex"></property>
+          <!--不同的异常可以做不同的处理-->
+          <property name="exceptionMappings">
+              <props>
+                  <prop key="cn.smbms.exception.LoginException">Login</prop>
+                  <prop key="java.lang.Exception">error</prop>
+              </props>
+          </property>
+      </bean>
+
+      <!--文件上传-->
+      <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+          <property name="maxUploadSize" value="5000000"></property>
+          <property name="defaultEncoding" value="UTF-8"></property>
+      </bean>
+
+
+    <!--配置自定义的登录拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/sys/**/"/>
+            <mvc:exclude-mapping path="/sys/user/login.do"/><!--指定的请求不被拦截-->
+            <bean class="cn.smbms.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+      <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+          <property name="prefix" value="/WEB-INF/Jsp/"></property>
+          <property name="suffix" value=".jsp"></property>
+      </bean>
+
+    <!-- 自定义ObjectMapper生成日期时按照指定格式输出 -->
+<!--    <bean id="dataMapper" class="com.fasterxml.jackson.databind.ObjectMapper">-->
+<!--        <property name="dateFormat">-->
+<!--            <bean class="java.text.SimpleDateFormat">-->
+<!--                <constructor-arg value="yyyy-MM-dd"></constructor-arg>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--    </bean>-->
+</beans>
